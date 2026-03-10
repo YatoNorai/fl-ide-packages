@@ -43,6 +43,11 @@ jobs:
           priority: 100
           device_name: /dev/zram0
 
+      - name: Restore script permissions
+        run: |
+          find . -name "*.sh" -o -name "*.py" -o -name "*.rb" | xargs chmod +x
+          chmod +x build-package.sh
+
       - name: Patch package name (com.termux → com.yato.fl_ide)
         run: |
           sed -i \
@@ -55,7 +60,6 @@ jobs:
 
       - name: Build bootstrap (${{ github.event.inputs.arch }})
         run: |
-          chmod +x scripts/run-docker.sh scripts/build-bootstraps.sh build-package.sh
           mkdir -p output
           ./scripts/run-docker.sh \
             ./scripts/build-bootstraps.sh \
