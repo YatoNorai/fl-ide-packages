@@ -1,0 +1,109 @@
+name: FL IDE — Build Bootstrap
+
+on:
+  workflow_dispatch:
+    inputs:
+      arch:
+        description: "Arquitetura"
+        required: true
+        default: "aarch64"
+        type: choice
+        options:
+          - aarch64
+          - arm
+          - x86_64
+          - i686
+      publish_release:
+        description: "Publicar como GitHub Release"
+        type: boolean
+        default: true
+
+permissions: {}
+
+concurrency:
+  group: flide-bootstrap-${{ github.event.inputs.arch }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    name: bootstrap (${{ github.event.inputs.arch }})
+    permissions:
+      contents: write
+    runs-on: ubuntu-24.04
+
+    steps:
+      - name: Clone repository
+        uses: actions/checkout@v4
+
+      # Memória extra: Perl e apt precisam de muito RAM durante a compilação
+      - name: Enable zram swap
+        uses: ./.github/actions/zram
+        with:
+          algorithm: zstd
+          size: 16G
+          priority: 100
+          device_name: /dev/zram0
+
+      # Trocar com.termux por com.yato.fl_ide em properties.sh
+      # O build-bootstraps.sh sourcia esse arquivo, então os ELF binários
+      # já saem compilados com o caminho correto automaticamente.
+      - name: Patch package name (com.termux → com.yato.fl_ide)
+        run: |
+          sed -i \
+            's|TERMUX_APP__PACKAGE_NAME="com.termux"|TERMUX_APP__PACKAGE_NAME="com.yato.fl_ide"|' \
+            scripts/properties.sh
+          grep "TERMUX_APP__PACKAGE_NAME" scripts/properties.sh | head -1
+
+      - name: Pull package-builder image
+        run: docker pull ghcr.io/termux/package-builder:latest
+
+      # Mesmo comando que o CI oficial usa para compilar pacotes do source.
+      # run-docker.sh cria um container com o repo montado em
+      # /home/builder/termux-packages e executa build-bootstraps.sh via docker exec.
+      - name: Build bootstrap (${{ github.event.inputs.arch }})
+        run: |
+          mkdir -p output
+          ./scripts/run-docker.sh \
+            ./scripts/build-bootstraps.sh \
+            --architectures ${{ github.event.inputs.arch }} \
+            --add git,android-tools
+
+      # Confirmar que os paths no zip são com.yato.fl_ide e não com.termux
+      - name: Verify com.yato.fl_ide paths in zip
+        run: |
+          ZIP="bootstrap-${{ github.event.inputs.arch }}.zip"
+          echo "=== SYMLINKS.txt (primeiras linhas) ==="
+          unzip -p "$ZIP" SYMLINKS.txt | head -10
+          if unzip -p "$ZIP" SYMLINKS.txt | grep -q "com.yato.fl_ide"; then
+            echo "✅ Paths com.yato.fl_ide OK"
+          else
+            echo "❌ ERRO: paths com.yato.fl_ide não encontrados!"
+            exit 1
+          fi
+
+      - name: Upload artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: flide-bootstrap-${{ github.event.inputs.arch }}-${{ github.sha }}
+          path: bootstrap-${{ github.event.inputs.arch }}.zip
+          retention-days: 7
+
+      - name: Publish GitHub Release
+        if: ${{ github.event.inputs.publish_release == 'true' && success() }}
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          new_tag="flide-bootstrap-$(date '+%Y.%m.%d')"
+          existing=$(git tag | grep "^${new_tag}" | sort -r | head -1 | grep -oP 'r\K[0-9]+' || echo 0)
+          tag_rev=$((existing + 1))
+          new_tag="${new_tag}-r${tag_rev}+${{ github.event.inputs.arch }}"
+
+          gh release create "$new_tag" \
+            --title "FL IDE Bootstrap — ${{ github.event.inputs.arch }} ($(date '+%Y-%m-%d'))" \
+            --notes "Bootstrap compilado do source com \`TERMUX_APP__PACKAGE_NAME=com.yato.fl_ide\`
+
+          **Arquitetura:** \`${{ github.event.inputs.arch }}\`
+          **Pacotes extras:** \`git\`, \`android-tools\` (adb + fastboot)
+          **Commit:** [\`${GITHUB_SHA::8}\`](${{ github.server_url }}/${{ github.repository }}/commit/${{ github.sha }})" \
+            "bootstrap-${{ github.event.inputs.arch }}.zip"
