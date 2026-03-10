@@ -35,7 +35,6 @@ jobs:
       - name: Clone repository
         uses: actions/checkout@v4
 
-      # Memória extra: Perl e apt precisam de muito RAM durante a compilação
       - name: Enable zram swap
         uses: ./.github/actions/zram
         with:
@@ -44,9 +43,6 @@ jobs:
           priority: 100
           device_name: /dev/zram0
 
-      # Trocar com.termux por com.yato.fl_ide em properties.sh
-      # O build-bootstraps.sh sourcia esse arquivo, então os ELF binários
-      # já saem compilados com o caminho correto automaticamente.
       - name: Patch package name (com.termux → com.yato.fl_ide)
         run: |
           sed -i \
@@ -57,18 +53,15 @@ jobs:
       - name: Pull package-builder image
         run: docker pull ghcr.io/termux/package-builder:latest
 
-      # Mesmo comando que o CI oficial usa para compilar pacotes do source.
-      # run-docker.sh cria um container com o repo montado em
-      # /home/builder/termux-packages e executa build-bootstraps.sh via docker exec.
       - name: Build bootstrap (${{ github.event.inputs.arch }})
         run: |
+          chmod +x scripts/run-docker.sh scripts/build-bootstraps.sh build-package.sh
           mkdir -p output
           ./scripts/run-docker.sh \
             ./scripts/build-bootstraps.sh \
             --architectures ${{ github.event.inputs.arch }} \
             --add git,android-tools
 
-      # Confirmar que os paths no zip são com.yato.fl_ide e não com.termux
       - name: Verify com.yato.fl_ide paths in zip
         run: |
           ZIP="bootstrap-${{ github.event.inputs.arch }}.zip"
