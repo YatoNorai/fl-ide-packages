@@ -1,0 +1,2 @@
+#!/data/data/com.yato.fl_ide/files/usr/bin/sh
+export PATH=/data/data/com.yato.fl_ide/files/usr/opt/rustc-nightly/bin:$PATH

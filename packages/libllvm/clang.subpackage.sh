@@ -12,14 +12,9 @@ bin/gcc
 bin/git-clang-format
 bin/hmaptool
 bin/intercept-build
-bin/*-linux-android*-clang
-bin/*-linux-android*-clang++
-bin/*-linux-android*-cpp
-bin/*-linux-android*-g++
-bin/*-linux-android*-gcc
+bin/*-linux-android*
 bin/modularize
 bin/nvptx-arch
-bin/offload-arch
 bin/pp-trace
 bin/run-clang-tidy
 bin/scan-*
@@ -28,11 +23,9 @@ lib/clang/*/include/*.h
 lib/clang/*/include/module.modulemap
 lib/clang/*/include/cuda_wrappers/
 lib/clang/*/include/llvm_libc_wrappers/
-lib/clang/*/include/llvm_offload_wrappers/
 lib/clang/*/include/openmp_wrappers/
+lib/clang/*/include/orc/
 lib/clang/*/include/ppc_wrappers/
-lib/clang/*/include/zos_wrappers/
-lib/clang/latest
 lib/cmake/clang
 lib/cmake/openmp
 lib/libarcher.so
@@ -42,7 +35,6 @@ lib/libomp.a
 lib/libscanbuild/
 libexec/
 share/clang
-share/clang-doc
 share/man/man1/clang.1.gz
 share/man/man1/diagtool.1.gz
 share/man/man1/scan-build.1.gz

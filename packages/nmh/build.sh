@@ -3,7 +3,6 @@ TERMUX_PKG_DESCRIPTION="Powerful electronic mail handling system"
 TERMUX_PKG_LICENSE="BSD 3-Clause"
 TERMUX_PKG_MAINTAINER="@termux"
 TERMUX_PKG_VERSION=1.8
-TERMUX_PKG_REVISION=2
 TERMUX_PKG_SRCURL=https://download-mirror.savannah.gnu.org/releases/nmh/nmh-${TERMUX_PKG_VERSION}.tar.gz
 TERMUX_PKG_SHA256=366ce0ce3f9447302f5567009269c8bb3882d808f33eefac85ba367e875c8615
 TERMUX_PKG_DEPENDS="gdbm, libcurl, libiconv, libsasl, ncurses, openssl, readline"
@@ -45,7 +44,7 @@ etc/nmh/scan.timely
 etc/nmh/scan.unseen"
 
 termux_step_pre_configure() {
-	TERMUX_PKG_MAKE_PROCESSES=1
+	TERMUX_MAKE_PROCESSES=1
 	autoreconf -fi
 }
 

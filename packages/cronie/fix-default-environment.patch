@@ -1,9 +1,10 @@
-+++ ./src/env.c
-@@ -122,21 +122,19 @@
- 
+diff -uNr cronie-1.5.5/src/env.c cronie-1.5.5.mod/src/env.c
+--- cronie-1.5.5/src/env.c	2019-04-15 11:41:50.000000000 +0300
++++ cronie-1.5.5.mod/src/env.c	2020-07-11 01:00:33.448944127 +0300
+@@ -123,21 +123,20 @@
  int env_set_from_environ(char ***envpp) {
  	static const char *names[] = {
--		"LANG",
+ 		"LANG",
 -		"LC_CTYPE",
 -		"LC_NUMERIC",
 -		"LC_TIME",
@@ -18,7 +19,8 @@
 -		"LC_IDENTIFICATION",
 -		"LC_ALL",
 -		"LANGUAGE",
-+    "ANDROID_ART_ROOT",
+ 		"RANDOM_DELAY",
++		"ANDROID_ART_ROOT",
 +		"ANDROID_DATA",
 +		"ANDROID_I18N_ROOT",
 +		"ANDROID_ROOT",
@@ -31,24 +33,6 @@
 +		"PREFIX",
 +		"TMPDIR",
 +		"TZ",
- 		"RANDOM_DELAY",
- 		"MAILFROM",
  		NULL
-@@ -149,7 +147,7 @@
- 			size_t namelen;
- 
- 			namelen = strlen(*name);
--			if (strncmp(*name, *procenv, namelen) == 0 
-+			if (strncmp(*name, *procenv, namelen) == 0
- 			    && (*procenv)[namelen] == '=') {
- 				char **tmpenv;
- 
-@@ -298,7 +296,7 @@
- 
- 	if (glue_strings(envstr, sizeof envstr, "HOME", dir, '=')) {
- 		envp = env_set(envp, envstr);
--	}			
-+	}
- 	else
- 		log_it("CRON", getpid(), "ERROR", "can't set HOME", 0);
- 
+ 	};
+ 	const char **name;

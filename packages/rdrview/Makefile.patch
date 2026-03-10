@@ -1,7 +1,10 @@
 --- a/Makefile
 +++ b/Makefile
-@@ -6,10 +6,10 @@
- endif
+@@ -1,11 +1,11 @@
+-SYSTEM = $(shell uname)
+-CC = gcc
++SYSTEM = Linux
++CC ?= gcc
  GIT_COMMIT = $(shell git rev-parse --short HEAD)
  
 -CFLAGS = -DNDEBUG -O2 -Wall -Wextra -fno-strict-aliasing
@@ -14,3 +17,12 @@
  ifeq ($(SYSTEM), Linux)
  	LDLIBS += -lseccomp
  else ifeq ($(SYSTEM), FreeBSD)
+@@ -14,7 +14,7 @@
+ 	LDLIBS += -liconv
+ endif
+ 
+-PREFIX = /usr/local
++PREFIX = @TERMUX_PREFIX@
+ BINDIR = $(DESTDIR)$(PREFIX)/bin
+ MANDIR = $(DESTDIR)$(PREFIX)/share/man/man1
+ 

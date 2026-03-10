@@ -34,7 +34,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#define __USE_GNU
 #include <sys/mman.h>
 #include <sys/syscall.h>
 #include <unistd.h>

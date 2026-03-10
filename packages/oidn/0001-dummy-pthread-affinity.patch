@@ -1,6 +1,6 @@
---- a/core/thread.cpp
-+++ b/core/thread.cpp
-@@ -16,6 +16,20 @@
+--- a/common/thread.cpp
++++ b/common/thread.cpp
+@@ -13,6 +13,20 @@
  #include "thread.h"
  #include <fstream>
  
@@ -18,6 +18,6 @@
 +}
 +#endif
 +
- OIDN_NAMESPACE_BEGIN
+ namespace oidn {
  
  #if defined(_WIN32)

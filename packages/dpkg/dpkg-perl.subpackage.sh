@@ -8,10 +8,8 @@ termux_step_create_subpkg_debscripts() {
 	#!$TERMUX_PREFIX/bin/bash
 	set -e
 
-	export PERL_MM_USE_DEFAULT=1
-
 	echo "Sideloading Perl Locale::gettext ..."
-	cpan -Ti Locale::gettext
+	cpan -fi Locale::gettext
 
 	exit 0
 	POSTINST_EOF

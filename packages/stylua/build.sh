@@ -1,16 +1,16 @@
 TERMUX_PKG_HOMEPAGE=https://github.com/JohnnyMorganz/StyLua
 TERMUX_PKG_DESCRIPTION="An opinionated Lua code formatter"
 TERMUX_PKG_LICENSE="MPL-2.0"
-TERMUX_PKG_MAINTAINER="@termux"
-TERMUX_PKG_VERSION="2.4.0"
+TERMUX_PKG_MAINTAINER="@shadmansaleh"
+TERMUX_PKG_VERSION="0.19.1"
 TERMUX_PKG_SRCURL=https://github.com/JohnnyMorganz/StyLua/archive/refs/tags/v${TERMUX_PKG_VERSION}.tar.gz
-TERMUX_PKG_SHA256=e63130a0bc26d0825f99afcfb4d969516ab34dd1b397087bf564095766a16c2a
+TERMUX_PKG_SHA256=c232227bf6085e3039b47a2ee24c76dad6ba1e786df65d9933ee000a3ee2c36e
 TERMUX_PKG_AUTO_UPDATE=true
 TERMUX_PKG_BUILD_IN_SRC=true
 
 termux_step_make() {
 	termux_setup_rust
-	cargo build --jobs $TERMUX_PKG_MAKE_PROCESSES --target $CARGO_TARGET_NAME --release --all-features
+	cargo build --jobs $TERMUX_MAKE_PROCESSES --target $CARGO_TARGET_NAME --release --all-features
 
 }
 

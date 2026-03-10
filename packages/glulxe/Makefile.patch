@@ -13,14 +13,13 @@
  
  #GLKINCLUDEDIR = ../glkterm
  #GLKLIBDIR = ../glkterm
-@@ -38,10 +38,9 @@
- # (MacOS always uses ARC4, in case you were wondering.)
+@@ -29,9 +29,8 @@
  
  # Pick a C compiler.
--CC = cc
- #CC = gcc
+ #CC = cc
+-CC = gcc
  
--OPTIONS = -g -Wall -Wmissing-prototypes -Wno-unused -DOS_MAC
+-OPTIONS = -g -Wall -Wmissing-prototypes -Wstrict-prototypes -Wno-unused -DOS_UNIX
 +OPTIONS := $(CFLAGS) -DOS_UNIX
  
  # Locate the libxml2 library. You only need these lines if you are using

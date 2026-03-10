@@ -5,7 +5,7 @@
  	$(GO) build $(GOFLAGS)
  
 +hut-build:
-+	CGO_ENABLED=0 CC=gcc CFLAGS= LDFLAGS= GOOS= GOARCH= $(GO) build $(GOFLAGS) -o $@
++	CC=gcc CFLAGS= LDFLAGS= GOOS= GOARCH= $(GO) build $(GOFLAGS) -o $@
 +
  completions: hut.bash hut.zsh hut.fish
  

@@ -1,5 +1,6 @@
---- a/client/hostinfo_unix.cpp
-+++ b/client/hostinfo_unix.cpp
+diff -uNr boinc/client/hostinfo_unix.cpp boinc.mod/client/hostinfo_unix.cpp
+--- boinc/client/hostinfo_unix.cpp	2023-01-24 04:47:18.000000000 +0800
++++ boinc.mod/client/hostinfo_unix.cpp	2023-03-18 07:57:32.603993049 +0800
 @@ -169,6 +169,16 @@
  #include <OS.h>
  #endif
@@ -17,7 +18,7 @@
  // Some OS define _SC_PAGE_SIZE instead of _SC_PAGESIZE
  #if defined(_SC_PAGE_SIZE) && !defined(_SC_PAGESIZE)
  #define _SC_PAGESIZE _SC_PAGE_SIZE
-@@ -1505,7 +1515,12 @@
+@@ -1499,7 +1509,12 @@
  // return BOINC_SUCCESS if at least version could be found (extra_info may remain empty)
  // return ERR_NOT_FOUND if ldd couldn't be opened or no version information was found
  //
@@ -31,7 +32,7 @@
  int get_libc_version(string& version, string&) {
      version = string(gnu_get_libc_version());
      return BOINC_SUCCESS;
-@@ -1555,16 +1570,24 @@
+@@ -1549,16 +1564,24 @@
  #if HAVE_SYS_UTSNAME_H
      struct utsname u;
      uname(&u);
@@ -60,7 +61,7 @@
      safe_strcpy(os_version, u.release);
  #endif
  #ifdef _HPUX_SOURCE
-@@ -1717,7 +1740,7 @@
+@@ -1711,7 +1734,7 @@
          return false;
      }
  } tty_patterns[] = {

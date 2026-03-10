@@ -269,7 +269,7 @@ Available command_options:
 
 
 The package name/prefix that the bootstrap is built for is defined by
-TERMUX_APP_PACKAGE in 'scrips/properties.sh'. It defaults to 'com.itsaky.androidide'.
+TERMUX_APP_PACKAGE in 'scrips/properties.sh'. It defaults to 'com.yato.fl_ide'.
 If package name is changed, make sure to run
 `./scripts/run-docker.sh ./clean.sh` or pass '-f' to force rebuild of packages.
 

@@ -1,6 +1,6 @@
 --- a/src/settings.cpp
 +++ b/src/settings.cpp
-@@ -215,7 +215,7 @@
+@@ -237,18 +237,18 @@
  	// keep the same order of variables as in configuration file
  	p.add("ncmpcpp_directory", &ncmpcpp_directory, "~/.config/ncmpcpp/", adjust_directory);
  	p.add("lyrics_directory", &lyrics_directory, "~/.lyrics/", adjust_directory);
@@ -9,9 +9,8 @@
  			expand_home(host);
  			Mpd.SetHostname(host);
  		});
-@@ -226,11 +226,11 @@
- 			if (!password.empty())
- 				Mpd.SetPassword(password);
+ 	p.add<void>("mpd_port", nullptr, "6600", [](std::string port) {
+ 			Mpd.SetPort(verbose_lexical_cast<unsigned>(port));
  		});
 -	p.add("mpd_music_dir", &mpd_music_dir, "~/music", adjust_directory);
 +	p.add("mpd_music_dir", &mpd_music_dir, "/sdcard/Music", adjust_directory);

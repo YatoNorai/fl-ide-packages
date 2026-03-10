@@ -144,10 +144,10 @@ diff -u -r ../orig-source/src/pstree.c ./src/pstree.c
              }
            }
          }
-@@ -1248,8 +1248,7 @@
+@@ -1250,8 +1264,7 @@
    }
    (void) closedir(dir);
-   fix_orphans(root_pid);
+   fix_orphans();
 -  if (print_args)
 -    free(buffer);
 +  free(buffer);

@@ -11,7 +11,7 @@
  #include <sys/time.h>
  
  #include "c.h"
-@@ -56,10 +56,14 @@
+@@ -38,26 +40,38 @@
  
  static int create_shm(size_t size, int permission)
  {
@@ -25,9 +25,6 @@
 +#endif
  }
  
- #ifndef HAVE_SYS_MMAN_H
-@@ -91,10 +95,14 @@ static int create_posix_shm(const char *name, size_t size, int permission)
- 
  static int create_msg(int permission)
  {
 +#ifdef __ANDROID__
@@ -39,10 +36,6 @@
  	return msgget(key, permission | IPC_CREAT);
 +#endif
  }
- 
- #ifndef HAVE_MQUEUE_H
-@@ -120,10 +128,14 @@ static int create_posix_msg(const char *name, int permission)
-
  
  static int create_sem(int nsems, int permission)
  {
@@ -56,4 +49,4 @@
 +#endif
  }
  
- #ifndef HAVE_SEMAPHORE_H
+ static void __attribute__((__noreturn__)) usage(void)

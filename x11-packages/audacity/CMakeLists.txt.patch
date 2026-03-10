@@ -1,4 +1,5 @@
-+++ ./CMakeLists.txt
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
 @@ -226,6 +226,7 @@
     message( STATUS "Building for 32-bit target" )
  endif()

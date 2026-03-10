@@ -4,10 +4,9 @@ TERMUX_PKG_LICENSE="GPL-3.0"
 TERMUX_PKG_MAINTAINER="@termux"
 # This package depends on libpython${TERMUX_PYTHON_VERSION}.so.
 # Please revbump and rebuild when bumping TERMUX_PYTHON_VERSION.
-TERMUX_PKG_VERSION="16.3"
-TERMUX_PKG_REVISION=3
+TERMUX_PKG_VERSION="14.1"
 TERMUX_PKG_SRCURL=https://mirrors.kernel.org/gnu/gdb/gdb-${TERMUX_PKG_VERSION}.tar.xz
-TERMUX_PKG_SHA256=bcfcd095528a987917acf9fff3f1672181694926cc18d609c99d0042c00224c5
+TERMUX_PKG_SHA256=d66df51276143451fcbff464cc8723d68f1e9df45a6a2d5635a54e71643edb80
 TERMUX_PKG_DEPENDS="guile, libc++, libexpat, libgmp, libiconv, liblzma, libmpfr, libthread-db, ncurses, python, readline, zlib, zstd"
 TERMUX_PKG_BREAKS="gdb-dev"
 TERMUX_PKG_REPLACES="gdb-dev"
@@ -15,7 +14,6 @@ TERMUX_PKG_EXTRA_CONFIGURE_ARGS="
 --disable-shared
 --disable-werror
 --with-system-readline
---with-system-zlib
 --with-curses
 --with-guile
 --with-python=$TERMUX_PREFIX/bin/python

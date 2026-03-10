@@ -3,11 +3,10 @@ TERMUX_PKG_DESCRIPTION="FFplay media player"
 TERMUX_PKG_LICENSE="GPL-3.0"
 TERMUX_PKG_MAINTAINER="@termux"
 # Please align the version with `ffmpeg` package.
-TERMUX_PKG_VERSION="8.0.1"
+TERMUX_PKG_VERSION="6.1"
 TERMUX_PKG_SRCURL=https://www.ffmpeg.org/releases/ffmpeg-${TERMUX_PKG_VERSION}.tar.xz
-TERMUX_PKG_SHA256=05ee0b03119b45c0bdb4df654b96802e909e0a752f72e4fe3794f487229e5a41
-TERMUX_PKG_DEPENDS="ffmpeg, libandroid-shmem, libx11, libxcb, libxext, libxv, pulseaudio, sdl2 | sdl2-compat"
-TERMUX_PKG_ANTI_BUILD_DEPENDS="sdl2-compat"
+TERMUX_PKG_SHA256=488c76e57dd9b3bee901f71d5c95eaf1db4a5a31fe46a28654e837144207c270
+TERMUX_PKG_DEPENDS="ffmpeg, libandroid-shmem, libx11, libxcb, libxext, libxv, pulseaudio, sdl2"
 
 termux_step_pre_configure() {
 	_FFPLAY_PREFIX="$TERMUX_PREFIX/opt/$TERMUX_PKG_NAME"
@@ -17,12 +16,12 @@ termux_step_pre_configure() {
 termux_step_configure() {
 	local _ARCH
 	case "$TERMUX_ARCH" in
-		"arm") _ARCH=armeabi-v7a ;;
-		"i686") _ARCH=x86 ;;
-		*) _ARCH="$TERMUX_ARCH" ;;
+		arm ) _ARCH=armeabi-v7a ;;
+		i686 ) _ARCH=x86 ;;
+		* ) _ARCH="$TERMUX_ARCH" ;;
 	esac
 
-	"$TERMUX_PKG_SRCDIR/configure" \
+	$TERMUX_PKG_SRCDIR/configure \
 		--prefix="${_FFPLAY_PREFIX}" \
 		--cc="$CC" \
 		--pkg-config="$PKG_CONFIG" \
@@ -47,7 +46,7 @@ termux_step_configure() {
 }
 
 termux_step_post_make_install() {
-	mkdir -p "$TERMUX_PREFIX/bin"
+	mkdir -p $TERMUX_PREFIX/bin
 	ln -sfr "${_FFPLAY_PREFIX}/bin/ffplay" "$TERMUX_PREFIX/bin/"
 }
 

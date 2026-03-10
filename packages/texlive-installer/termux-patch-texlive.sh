@@ -3,7 +3,7 @@
 set -e
 
 PREFIX=@TERMUX_PREFIX@
-TL_ROOT=$PREFIX/share/texlive/@YEAR@
+TL_ROOT=$PREFIX/share/texlive
 
 cd $TL_ROOT
 for patch in $PREFIX/opt/texlive/*.diff; do

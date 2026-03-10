@@ -1,4 +1,4 @@
-name: Generate bootstrap archives (android-7)
+name: Generate bootstrap archives
 
 on:
   schedule:
@@ -15,7 +15,7 @@ jobs:
   build:
     permissions:
       contents: read # actions/upload-artifact doesn't need contents: write
-    runs-on: ubuntu-slim
+    runs-on: ubuntu-latest
     strategy:
       matrix:
         arch:
@@ -26,28 +26,28 @@ jobs:
     if: github.repository == 'termux/termux-packages'
     steps:
       - name: Git clone
-        uses: actions/checkout@v6
+        uses: actions/checkout@v4
       - name: Create bootstrap archive
         run: ./scripts/generate-bootstraps.sh --architectures ${{ matrix.arch }}
       - name: Store artifacts
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v3
         with:
-          name: bootstrap-archives-${{ matrix.arch }}-${{ github.sha }}
+          name: bootstrap-archives-${{ github.sha }}
           path: "*.zip"
   publish:
     permissions:
       contents: write # for git push
     needs: build
-    runs-on: ubuntu-slim
+    runs-on: ubuntu-latest
     steps:
       - name: Git clone
-        uses: actions/checkout@v6
+        uses: actions/checkout@v4
         with:
           fetch-depth: 0
       - name: Fetch bootstrap archives
-        uses: actions/download-artifact@v7
+        uses: actions/download-artifact@v3
         with:
-          merge-multiple: true
+          name: bootstrap-archives-${{ github.sha }}
           path: ./
       - name: Create new tag
         id: get_tag
@@ -59,13 +59,16 @@ jobs:
           else
             tag_rev=1
           fi
-          new_tag="${new_tag}-r${tag_rev}+apt.android-7"
+          new_tag="${new_tag}-r${tag_rev}+apt-android-7"
+          git tag "$new_tag"
+          git push --tags
           echo "tag_name=$new_tag" >> $GITHUB_OUTPUT
       - name: Publish bootstrap zips to GitHub release
-        env:
-          GH_TOKEN: ${{ github.token }}
-        run: |
-          gh release create ${{ steps.get_tag.outputs.tag_name }} --title "Bootstrap archives for Termux application (apt.android-7)"
-          for file in *.zip; do
-            gh release upload ${{ steps.get_tag.outputs.tag_name }} "$file"
-          done
+        uses: termux/upload-release-action@v4.1.0
+        with:
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          file: "*.zip"
+          file_glob: true
+          release_name: "Bootstrap archives for Termux application"
+          tag: ${{ steps.get_tag.outputs.tag_name }}
+          checksums: sha256,sha512,md5

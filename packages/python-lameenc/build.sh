@@ -2,30 +2,35 @@ TERMUX_PKG_HOMEPAGE=https://github.com/chrisstaite/lameenc
 TERMUX_PKG_DESCRIPTION="Python bindings around the LAME encoder"
 TERMUX_PKG_LICENSE="LGPL-3.0"
 TERMUX_PKG_MAINTAINER="@termux"
-TERMUX_PKG_VERSION="1.8.2"
+TERMUX_PKG_VERSION="1.7.0"
 TERMUX_PKG_SRCURL=https://github.com/chrisstaite/lameenc/archive/refs/tags/v${TERMUX_PKG_VERSION}.tar.gz
-TERMUX_PKG_SHA256=87a941abc2f7773a2bf6fea4e49ed0eb3c5be78b1110733322f1ddc413a6dbcb
+TERMUX_PKG_SHA256=0255d5bf4f777f4e17cd4b1d862dcec82a9023d720bdedee20b3106f9d3d25f3
 TERMUX_PKG_AUTO_UPDATE=true
-TERMUX_PKG_DEPENDS="libandroid-support, libmp3lame, python"
-TERMUX_PKG_PYTHON_COMMON_BUILD_DEPS="build, setuptools-scm, wheel"
+TERMUX_PKG_DEPENDS="libmp3lame, python"
+TERMUX_PKG_PYTHON_COMMON_DEPS="wheel"
 TERMUX_PKG_BUILD_IN_SRC=true
 
 termux_step_pre_configure() {
-	rm -rf build dist CMakeLists.txt
+	rm -rf build dist
+}
+
+termux_step_configure() {
+	:
 }
 
 termux_step_make() {
-	# Set version for setuptools_scm
-	export SETUPTOOLS_SCM_PRETEND_VERSION="${TERMUX_PKG_VERSION}"
-
-	cross-python -m build -w -x -o build \
-		-C="--build-option=--libdir=$TERMUX_PREFIX/lib" \
-		-C="--build-option=--incdir=$TERMUX_PREFIX/include/lame"
+	python setup.py \
+		--libdir=$TERMUX_PREFIX/lib \
+		--incdir=$TERMUX_PREFIX/include/lame \
+		bdist_wheel
 }
 
 termux_step_make_install() {
-	local _pyv="${TERMUX_PYTHON_VERSION/./}"
-	local _whl="lameenc-$TERMUX_PKG_VERSION-cp$_pyv-cp$_pyv-android_$TERMUX_ARCH.whl"
-
-	cross-pip install --no-deps --prefix=$TERMUX_PREFIX --force-reinstall $TERMUX_PKG_SRCDIR/build/$_whl
+	local f
+	for f in dist/lameenc-${TERMUX_PKG_VERSION#*:}-*.whl; do
+		if [ -e "${f}" ]; then
+			pip install --force "${f}" --prefix $TERMUX_PREFIX
+			break
+		fi
+	done
 }

@@ -1,6 +1,6 @@
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
-@@ -465,7 +465,6 @@
+@@ -446,7 +446,6 @@ IF(NOT WITHOUT_SERVER)
    OPTION (WITH_EMBEDDED_SERVER "Compile MariaDB with embedded server" OFF)
    IF(WITH_EMBEDDED_SERVER)
      ADD_SUBDIRECTORY(libmysqld)
@@ -8,7 +8,7 @@
      ADD_SUBDIRECTORY(unittest/embedded)
    ENDIF(WITH_EMBEDDED_SERVER)
    IF(NOT WIN32)
-@@ -597,7 +596,6 @@
+@@ -575,7 +574,6 @@ IF(NOT WITHOUT_SERVER)
     mariadb-plugin
     mariadb-show
     mariadb-slap

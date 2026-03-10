@@ -1,5 +1,6 @@
---- a/zig/lib/libc/musl/src/ipc/semtimedop.c
-+++ b/zig/lib/libc/musl/src/ipc/semtimedop.c
+diff -uNr zig-bootstrap-0.11.0/zig/lib/libc/musl/src/ipc/semtimedop.c zig-bootstrap-0.11.0.mod/zig/lib/libc/musl/src/ipc/semtimedop.c
+--- zig-bootstrap-0.11.0/zig/lib/libc/musl/src/ipc/semtimedop.c	2023-08-11 09:21:14.000000000 +0800
++++ zig-bootstrap-0.11.0.mod/zig/lib/libc/musl/src/ipc/semtimedop.c	2023-09-28 20:07:06.071300122 +0800
 @@ -16,7 +16,7 @@
  
  int semtimedop(int id, struct sembuf *buf, size_t n, const struct timespec *ts)
@@ -9,8 +10,9 @@
  	time_t s = ts ? ts->tv_sec : 0;
  	long ns = ts ? ts->tv_nsec : 0;
  	int r = -ENOSYS;
---- a/zig/lib/libc/musl/src/linux/clock_adjtime.c
-+++ b/zig/lib/libc/musl/src/linux/clock_adjtime.c
+diff -uNr zig-bootstrap-0.11.0/zig/lib/libc/musl/src/linux/clock_adjtime.c zig-bootstrap-0.11.0.mod/zig/lib/libc/musl/src/linux/clock_adjtime.c
+--- zig-bootstrap-0.11.0/zig/lib/libc/musl/src/linux/clock_adjtime.c	2023-08-11 09:21:14.000000000 +0800
++++ zig-bootstrap-0.11.0.mod/zig/lib/libc/musl/src/linux/clock_adjtime.c	2023-09-28 20:07:19.135300123 +0800
 @@ -37,7 +37,7 @@
  int clock_adjtime (clockid_t clock_id, struct timex *utx)
  {
@@ -20,8 +22,21 @@
  	struct ktimex64 ktx = {
  		.modes = utx->modes,
  		.offset = utx->offset,
---- a/zig/lib/libc/musl/src/linux/timerfd.c
-+++ b/zig/lib/libc/musl/src/linux/timerfd.c
+diff -uNr zig-bootstrap-0.11.0/zig/lib/libc/musl/src/linux/ppoll.c zig-bootstrap-0.11.0.mod/zig/lib/libc/musl/src/linux/ppoll.c
+--- zig-bootstrap-0.11.0/zig/lib/libc/musl/src/linux/ppoll.c	2023-08-11 09:21:14.000000000 +0800
++++ zig-bootstrap-0.11.0.mod/zig/lib/libc/musl/src/linux/ppoll.c	2023-09-28 20:07:35.611300124 +0800
+@@ -11,7 +11,7 @@
+ {
+ 	time_t s = to ? to->tv_sec : 0;
+ 	long ns = to ? to->tv_nsec : 0;
+-#ifdef SYS_ppoll_time64
++#if defined(SYS_ppoll_time64) && !defined(__ILP32__)
+ 	int r = -ENOSYS;
+ 	if (SYS_ppoll == SYS_ppoll_time64 || !IS32BIT(s))
+ 		r = __syscall_cp(SYS_ppoll_time64, fds, n,
+diff -uNr zig-bootstrap-0.11.0/zig/lib/libc/musl/src/linux/timerfd.c zig-bootstrap-0.11.0.mod/zig/lib/libc/musl/src/linux/timerfd.c
+--- zig-bootstrap-0.11.0/zig/lib/libc/musl/src/linux/timerfd.c	2023-08-11 09:21:14.000000000 +0800
++++ zig-bootstrap-0.11.0.mod/zig/lib/libc/musl/src/linux/timerfd.c	2023-09-28 20:08:00.391300125 +0800
 @@ -11,7 +11,7 @@
  
  int timerfd_settime(int fd, int flags, const struct itimerspec *new, struct itimerspec *old)
@@ -40,8 +55,9 @@
  	int r = -ENOSYS;
  	if (sizeof(time_t) > 4)
  		r = __syscall(SYS_timerfd_gettime64, fd, cur);
---- a/zig/lib/libc/musl/src/linux/wait4.c
-+++ b/zig/lib/libc/musl/src/linux/wait4.c
+diff -uNr zig-bootstrap-0.11.0/zig/lib/libc/musl/src/linux/wait4.c zig-bootstrap-0.11.0.mod/zig/lib/libc/musl/src/linux/wait4.c
+--- zig-bootstrap-0.11.0/zig/lib/libc/musl/src/linux/wait4.c	2023-08-11 09:21:14.000000000 +0800
++++ zig-bootstrap-0.11.0.mod/zig/lib/libc/musl/src/linux/wait4.c	2023-09-28 20:08:07.347300126 +0800
 @@ -8,7 +8,7 @@
  pid_t wait4(pid_t pid, int *status, int options, struct rusage *ru)
  {
@@ -51,8 +67,9 @@
  	if (ru) {
  		long long kru64[18];
  		r = __syscall(SYS_wait4_time64, pid, status, options, kru64);
---- a/zig/lib/libc/musl/src/misc/getrusage.c
-+++ b/zig/lib/libc/musl/src/misc/getrusage.c
+diff -uNr zig-bootstrap-0.11.0/zig/lib/libc/musl/src/misc/getrusage.c zig-bootstrap-0.11.0.mod/zig/lib/libc/musl/src/misc/getrusage.c
+--- zig-bootstrap-0.11.0/zig/lib/libc/musl/src/misc/getrusage.c	2023-08-11 09:21:14.000000000 +0800
++++ zig-bootstrap-0.11.0.mod/zig/lib/libc/musl/src/misc/getrusage.c	2023-09-28 20:08:14.451300126 +0800
 @@ -6,7 +6,7 @@
  int getrusage(int who, struct rusage *ru)
  {
@@ -62,8 +79,9 @@
  	long long kru64[18];
  	r = __syscall(SYS_getrusage_time64, who, kru64);
  	if (!r) {
---- a/zig/lib/libc/musl/src/mq/mq_timedsend.c
-+++ b/zig/lib/libc/musl/src/mq/mq_timedsend.c
+diff -uNr zig-bootstrap-0.11.0/zig/lib/libc/musl/src/mq/mq_timedsend.c zig-bootstrap-0.11.0.mod/zig/lib/libc/musl/src/mq/mq_timedsend.c
+--- zig-bootstrap-0.11.0/zig/lib/libc/musl/src/mq/mq_timedsend.c	2023-08-11 09:21:14.000000000 +0800
++++ zig-bootstrap-0.11.0.mod/zig/lib/libc/musl/src/mq/mq_timedsend.c	2023-09-28 20:08:20.799300127 +0800
 @@ -7,7 +7,7 @@
  
  int mq_timedsend(mqd_t mqd, const char *msg, size_t len, unsigned prio, const struct timespec *at)
@@ -73,8 +91,9 @@
  	time_t s = at ? at->tv_sec : 0;
  	long ns = at ? at->tv_nsec : 0;
  	long r = -ENOSYS;
---- a/zig/lib/libc/musl/src/network/recvmmsg.c
-+++ b/zig/lib/libc/musl/src/network/recvmmsg.c
+diff -uNr zig-bootstrap-0.11.0/zig/lib/libc/musl/src/network/recvmmsg.c zig-bootstrap-0.11.0.mod/zig/lib/libc/musl/src/network/recvmmsg.c
+--- zig-bootstrap-0.11.0/zig/lib/libc/musl/src/network/recvmmsg.c	2023-08-11 09:21:14.000000000 +0800
++++ zig-bootstrap-0.11.0.mod/zig/lib/libc/musl/src/network/recvmmsg.c	2023-09-28 20:08:25.415300127 +0800
 @@ -18,7 +18,7 @@
  	for (i = vlen; i; i--, mh++)
  		mh->msg_hdr.__pad1 = mh->msg_hdr.__pad2 = 0;
@@ -84,19 +103,9 @@
  	time_t s = timeout ? timeout->tv_sec : 0;
  	long ns = timeout ? timeout->tv_nsec : 0;
  	int r = __syscall_cp(SYS_recvmmsg_time64, fd, msgvec, vlen, flags,
---- a/zig/lib/libc/musl/src/select/ppoll.c
-+++ b/zig/lib/libc/musl/src/select/ppoll.c
-@@ -11,7 +11,7 @@
- {
- 	time_t s = to ? to->tv_sec : 0;
- 	long ns = to ? to->tv_nsec : 0;
--#ifdef SYS_ppoll_time64
-+#if defined(SYS_ppoll_time64) && !defined(__ILP32__)
- 	int r = -ENOSYS;
- 	if (SYS_ppoll == SYS_ppoll_time64 || !IS32BIT(s))
- 		r = __syscall_cp(SYS_ppoll_time64, fds, n,
---- a/zig/lib/libc/musl/src/select/pselect.c
-+++ b/zig/lib/libc/musl/src/select/pselect.c
+diff -uNr zig-bootstrap-0.11.0/zig/lib/libc/musl/src/select/pselect.c zig-bootstrap-0.11.0.mod/zig/lib/libc/musl/src/select/pselect.c
+--- zig-bootstrap-0.11.0/zig/lib/libc/musl/src/select/pselect.c	2023-08-11 09:21:14.000000000 +0800
++++ zig-bootstrap-0.11.0.mod/zig/lib/libc/musl/src/select/pselect.c	2023-09-28 20:08:29.587300127 +0800
 @@ -12,7 +12,7 @@
  	syscall_arg_t data[2] = { (uintptr_t)mask, _NSIG/8 };
  	time_t s = ts ? ts->tv_sec : 0;
@@ -106,8 +115,9 @@
  	int r = -ENOSYS;
  	if (SYS_pselect6 == SYS_pselect6_time64 || !IS32BIT(s))
  		r = __syscall_cp(SYS_pselect6_time64, n, rfds, wfds, efds,
---- a/zig/lib/libc/musl/src/select/select.c
-+++ b/zig/lib/libc/musl/src/select/select.c
+diff -uNr zig-bootstrap-0.11.0/zig/lib/libc/musl/src/select/select.c zig-bootstrap-0.11.0.mod/zig/lib/libc/musl/src/select/select.c
+--- zig-bootstrap-0.11.0/zig/lib/libc/musl/src/select/select.c	2023-08-11 09:21:14.000000000 +0800
++++ zig-bootstrap-0.11.0.mod/zig/lib/libc/musl/src/select/select.c	2023-09-28 20:08:34.511300127 +0800
 @@ -25,7 +25,7 @@
  		ns = us*1000;
  	}
@@ -117,8 +127,9 @@
  	int r = -ENOSYS;
  	if (SYS_pselect6 == SYS_pselect6_time64 || !IS32BIT(s))
  		r = __syscall_cp(SYS_pselect6_time64, n, rfds, wfds, efds,
---- a/zig/lib/libc/musl/src/signal/sigtimedwait.c
-+++ b/zig/lib/libc/musl/src/signal/sigtimedwait.c
+diff -uNr zig-bootstrap-0.11.0/zig/lib/libc/musl/src/signal/sigtimedwait.c zig-bootstrap-0.11.0.mod/zig/lib/libc/musl/src/signal/sigtimedwait.c
+--- zig-bootstrap-0.11.0/zig/lib/libc/musl/src/signal/sigtimedwait.c	2023-08-11 09:21:14.000000000 +0800
++++ zig-bootstrap-0.11.0.mod/zig/lib/libc/musl/src/signal/sigtimedwait.c	2023-09-28 20:08:43.159300128 +0800
 @@ -7,7 +7,7 @@
  
  static int do_sigtimedwait(const sigset_t *restrict mask, siginfo_t *restrict si, const struct timespec *restrict ts)
@@ -128,8 +139,9 @@
  	time_t s = ts ? ts->tv_sec : 0;
  	long ns = ts ? ts->tv_nsec : 0;
  	int r = -ENOSYS;
---- a/zig/lib/libc/musl/src/stat/fstatat.c
-+++ b/zig/lib/libc/musl/src/stat/fstatat.c
+diff -uNr zig-bootstrap-0.11.0/zig/lib/libc/musl/src/stat/fstatat.c zig-bootstrap-0.11.0.mod/zig/lib/libc/musl/src/stat/fstatat.c
+--- zig-bootstrap-0.11.0/zig/lib/libc/musl/src/stat/fstatat.c	2023-08-11 09:21:14.000000000 +0800
++++ zig-bootstrap-0.11.0.mod/zig/lib/libc/musl/src/stat/fstatat.c	2023-09-28 08:24:03.083998795 +0800
 @@ -7,6 +7,9 @@
  #include <sys/sysmacros.h>
  #include "syscall.h"
@@ -140,7 +152,7 @@
  struct statx {
  	uint32_t stx_mask;
  	uint32_t stx_blksize;
-@@ -140,14 +143,18 @@
+@@ -139,14 +142,18 @@
  {
  	int ret;
  #ifdef SYS_fstatat
@@ -159,8 +171,9 @@
  	return __syscall_ret(ret);
  }
  
---- a/zig/lib/libc/musl/src/stat/utimensat.c
-+++ b/zig/lib/libc/musl/src/stat/utimensat.c
+diff -uNr zig-bootstrap-0.11.0/zig/lib/libc/musl/src/stat/utimensat.c zig-bootstrap-0.11.0.mod/zig/lib/libc/musl/src/stat/utimensat.c
+--- zig-bootstrap-0.11.0/zig/lib/libc/musl/src/stat/utimensat.c	2023-08-11 09:21:14.000000000 +0800
++++ zig-bootstrap-0.11.0.mod/zig/lib/libc/musl/src/stat/utimensat.c	2023-09-28 20:08:56.583300129 +0800
 @@ -12,7 +12,7 @@
  	int r;
  	if (times && times[0].tv_nsec==UTIME_NOW && times[1].tv_nsec==UTIME_NOW)
@@ -170,8 +183,9 @@
  	r = -ENOSYS;
  	time_t s0=0, s1=0;
  	long ns0=0, ns1=0;
---- a/zig/lib/libc/musl/src/thread/__timedwait.c
-+++ b/zig/lib/libc/musl/src/thread/__timedwait.c
+diff -uNr zig-bootstrap-0.11.0/zig/lib/libc/musl/src/thread/__timedwait.c zig-bootstrap-0.11.0.mod/zig/lib/libc/musl/src/thread/__timedwait.c
+--- zig-bootstrap-0.11.0/zig/lib/libc/musl/src/thread/__timedwait.c	2023-08-11 09:21:14.000000000 +0800
++++ zig-bootstrap-0.11.0.mod/zig/lib/libc/musl/src/thread/__timedwait.c	2023-09-28 20:09:02.975300129 +0800
 @@ -11,7 +11,7 @@
  static int __futex4_cp(volatile void *addr, int op, int val, const struct timespec *to)
  {
@@ -181,8 +195,9 @@
  	time_t s = to ? to->tv_sec : 0;
  	long ns = to ? to->tv_nsec : 0;
  	r = -ENOSYS;
---- a/zig/lib/libc/musl/src/thread/pthread_mutex_timedlock.c
-+++ b/zig/lib/libc/musl/src/thread/pthread_mutex_timedlock.c
+diff -uNr zig-bootstrap-0.11.0/zig/lib/libc/musl/src/thread/pthread_mutex_timedlock.c zig-bootstrap-0.11.0.mod/zig/lib/libc/musl/src/thread/pthread_mutex_timedlock.c
+--- zig-bootstrap-0.11.0/zig/lib/libc/musl/src/thread/pthread_mutex_timedlock.c	2023-08-11 09:21:14.000000000 +0800
++++ zig-bootstrap-0.11.0.mod/zig/lib/libc/musl/src/thread/pthread_mutex_timedlock.c	2023-09-28 20:09:15.575300130 +0800
 @@ -5,7 +5,7 @@
  
  static int __futex4(volatile void *addr, int op, int val, const struct timespec *to)
@@ -192,8 +207,9 @@
  	time_t s = to ? to->tv_sec : 0;
  	long ns = to ? to->tv_nsec : 0;
  	int r = -ENOSYS;
---- a/zig/lib/libc/musl/src/time/clock_gettime.c
-+++ b/zig/lib/libc/musl/src/time/clock_gettime.c
+diff -uNr zig-bootstrap-0.11.0/zig/lib/libc/musl/src/time/clock_gettime.c zig-bootstrap-0.11.0.mod/zig/lib/libc/musl/src/time/clock_gettime.c
+--- zig-bootstrap-0.11.0/zig/lib/libc/musl/src/time/clock_gettime.c	2023-08-11 09:21:14.000000000 +0800
++++ zig-bootstrap-0.11.0.mod/zig/lib/libc/musl/src/time/clock_gettime.c	2023-09-28 20:09:32.095300131 +0800
 @@ -75,7 +75,7 @@
  	}
  #endif
@@ -203,8 +219,9 @@
  	r = -ENOSYS;
  	if (sizeof(time_t) > 4)
  		r = __syscall(SYS_clock_gettime64, clk, ts);
---- a/zig/lib/libc/musl/src/time/clock_nanosleep.c
-+++ b/zig/lib/libc/musl/src/time/clock_nanosleep.c
+diff -uNr zig-bootstrap-0.11.0/zig/lib/libc/musl/src/time/clock_nanosleep.c zig-bootstrap-0.11.0.mod/zig/lib/libc/musl/src/time/clock_nanosleep.c
+--- zig-bootstrap-0.11.0/zig/lib/libc/musl/src/time/clock_nanosleep.c	2023-08-11 09:21:14.000000000 +0800
++++ zig-bootstrap-0.11.0.mod/zig/lib/libc/musl/src/time/clock_nanosleep.c	2023-09-28 20:09:37.731300131 +0800
 @@ -8,7 +8,7 @@
  int __clock_nanosleep(clockid_t clk, int flags, const struct timespec *req, struct timespec *rem)
  {
@@ -214,8 +231,9 @@
  	time_t s = req->tv_sec;
  	long ns = req->tv_nsec;
  	int r = -ENOSYS;
---- a/zig/lib/libc/musl/src/time/clock_settime.c
-+++ b/zig/lib/libc/musl/src/time/clock_settime.c
+diff -uNr zig-bootstrap-0.11.0/zig/lib/libc/musl/src/time/clock_settime.c zig-bootstrap-0.11.0.mod/zig/lib/libc/musl/src/time/clock_settime.c
+--- zig-bootstrap-0.11.0/zig/lib/libc/musl/src/time/clock_settime.c	2023-08-11 09:21:14.000000000 +0800
++++ zig-bootstrap-0.11.0.mod/zig/lib/libc/musl/src/time/clock_settime.c	2023-09-28 20:09:45.047300132 +0800
 @@ -6,7 +6,7 @@
  
  int clock_settime(clockid_t clk, const struct timespec *ts)
@@ -225,8 +243,9 @@
  	time_t s = ts->tv_sec;
  	long ns = ts->tv_nsec;
  	int r = -ENOSYS;
---- a/zig/lib/libc/musl/src/time/timer_gettime.c
-+++ b/zig/lib/libc/musl/src/time/timer_gettime.c
+diff -uNr zig-bootstrap-0.11.0/zig/lib/libc/musl/src/time/timer_gettime.c zig-bootstrap-0.11.0.mod/zig/lib/libc/musl/src/time/timer_gettime.c
+--- zig-bootstrap-0.11.0/zig/lib/libc/musl/src/time/timer_gettime.c	2023-08-11 09:21:14.000000000 +0800
++++ zig-bootstrap-0.11.0.mod/zig/lib/libc/musl/src/time/timer_gettime.c	2023-09-28 20:09:50.767300132 +0800
 @@ -8,7 +8,7 @@
  		pthread_t td = (void *)((uintptr_t)t << 1);
  		t = (void *)(uintptr_t)(td->timer_id & INT_MAX);
@@ -236,8 +255,9 @@
  	int r = -ENOSYS;
  	if (sizeof(time_t) > 4)
  		r = __syscall(SYS_timer_gettime64, t, val);
---- a/zig/lib/libc/musl/src/time/timer_settime.c
-+++ b/zig/lib/libc/musl/src/time/timer_settime.c
+diff -uNr zig-bootstrap-0.11.0/zig/lib/libc/musl/src/time/timer_settime.c zig-bootstrap-0.11.0.mod/zig/lib/libc/musl/src/time/timer_settime.c
+--- zig-bootstrap-0.11.0/zig/lib/libc/musl/src/time/timer_settime.c	2023-08-11 09:21:14.000000000 +0800
++++ zig-bootstrap-0.11.0.mod/zig/lib/libc/musl/src/time/timer_settime.c	2023-09-28 20:10:07.315300133 +0800
 @@ -10,7 +10,7 @@
  		pthread_t td = (void *)((uintptr_t)t << 1);
  		t = (void *)(uintptr_t)(td->timer_id & INT_MAX);
@@ -247,8 +267,9 @@
  	time_t is = val->it_interval.tv_sec, vs = val->it_value.tv_sec;
  	long ins = val->it_interval.tv_nsec, vns = val->it_value.tv_nsec;
  	int r = -ENOSYS;
---- a/zig/lib/libc/musl/src/unistd/access.c
-+++ b/zig/lib/libc/musl/src/unistd/access.c
+diff -uNr zig-bootstrap-0.11.0/zig/lib/libc/musl/src/unistd/access.c zig-bootstrap-0.11.0.mod/zig/lib/libc/musl/src/unistd/access.c
+--- zig-bootstrap-0.11.0/zig/lib/libc/musl/src/unistd/access.c	2023-08-11 09:21:14.000000000 +0800
++++ zig-bootstrap-0.11.0.mod/zig/lib/libc/musl/src/unistd/access.c	2023-09-28 13:23:09.001055238 +0800
 @@ -4,7 +4,7 @@
  
  int access(const char *filename, int amode)
@@ -258,8 +279,9 @@
  	return syscall(SYS_access, filename, amode);
  #else
  	return syscall(SYS_faccessat, AT_FDCWD, filename, amode, 0);
---- a/zig/lib/libc/musl/src/unistd/pipe.c
-+++ b/zig/lib/libc/musl/src/unistd/pipe.c
+diff -uNr zig-bootstrap-0.11.0/zig/lib/libc/musl/src/unistd/pipe.c zig-bootstrap-0.11.0.mod/zig/lib/libc/musl/src/unistd/pipe.c
+--- zig-bootstrap-0.11.0/zig/lib/libc/musl/src/unistd/pipe.c	2023-08-11 09:21:14.000000000 +0800
++++ zig-bootstrap-0.11.0.mod/zig/lib/libc/musl/src/unistd/pipe.c	2023-09-28 13:23:27.001055239 +0800
 @@ -3,7 +3,7 @@
  
  int pipe(int fd[2])

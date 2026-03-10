@@ -7,4 +7,3 @@ share/man/man8/
 "
 TERMUX_SUBPKG_DESCRIPTION="Unbound command-line tools"
 TERMUX_SUBPKG_DEPENDS="libexpat"
-TERMUX_SUBPKG_CONFFILES="etc/unbound/unbound.conf"
