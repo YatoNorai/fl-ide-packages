@@ -62,15 +62,14 @@ jobs:
         run: |
           mkdir -p output
 
-          # O sdkmanager instala componentes durante o build e precisa escrever
-          # arquivos de metadados no diretório do SDK. Como o container roda como
-          # 'builder' mas o SDK foi instalado como root na imagem Docker, o write
-          # falha com "Failed to read or create install properties file".
-          #
-          # Solução: rodar chmod e build no mesmo docker exec para garantir que
-          # as permissões são aplicadas imediatamente antes de qualquer acesso ao SDK.
+          # O Android SDK foi instalado como root na imagem Docker.
+          # O sdkmanager roda como 'builder' e falha ao criar arquivos de
+          # metadados porque os diretórios pertencem a root.
+          # chown transfere a propriedade para builder — assim novos
+          # subdiretórios criados durante a instalação também ficam com
+          # builder como dono e o sdkmanager pode escrever normalmente.
           ./scripts/run-docker.sh bash -c "
-            sudo chmod -R a+w /home/builder/lib/ &&
+            sudo chown -R builder:builder /home/builder/lib/ &&
             ./scripts/build-bootstraps.sh \
               --architectures ${{ github.event.inputs.arch }} \
               --add git,android-tools
