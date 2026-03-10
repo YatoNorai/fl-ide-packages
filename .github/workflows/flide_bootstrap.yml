@@ -58,20 +58,31 @@ jobs:
       - name: Pull package-builder image
         run: docker pull ghcr.io/termux/package-builder:latest
 
-      # Fix SDK permissions: o sdkmanager roda como 'builder' (uid 1001) dentro
-      # do container mas não consegue escrever no diretório do Android SDK.
-      # Iniciamos o container e corrigimos as permissões antes de compilar.
-      - name: Fix Android SDK permissions inside container
-        run: |
-          ./scripts/run-docker.sh sudo chmod -R a+w /home/builder/lib/
-
       - name: Build bootstrap (${{ github.event.inputs.arch }})
         run: |
           mkdir -p output
-          ./scripts/run-docker.sh \
+
+          # O sdkmanager instala componentes durante o build e precisa escrever
+          # arquivos de metadados no diretório do SDK. Como o container roda como
+          # 'builder' mas o SDK foi instalado como root na imagem Docker, o write
+          # falha com "Failed to read or create install properties file".
+          #
+          # Solução: rodar chmod e build no mesmo docker exec para garantir que
+          # as permissões são aplicadas imediatamente antes de qualquer acesso ao SDK.
+          ./scripts/run-docker.sh bash -c "
+            sudo chmod -R a+w /home/builder/lib/ &&
             ./scripts/build-bootstraps.sh \
-            --architectures ${{ github.event.inputs.arch }} \
-            --add git,android-tools
+              --architectures ${{ github.event.inputs.arch }} \
+              --add git,android-tools
+          "
+
+      - name: Upload full build log
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-log-${{ github.event.inputs.arch }}-${{ github.sha }}
+          path: build-full.log
+          retention-days: 7
 
       - name: Verify com.yato.fl_ide paths in zip
         run: |
@@ -86,7 +97,7 @@ jobs:
           fi
 
       - name: Upload artifact
-        if: always()
+        if: success()
         uses: actions/upload-artifact@v4
         with:
           name: flide-bootstrap-${{ github.event.inputs.arch }}-${{ github.sha }}
